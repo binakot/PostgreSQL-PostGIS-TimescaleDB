@@ -4,54 +4,72 @@ MAINTAINER Ivan Muratov, binakot@gmail.com
 
 # https://postgis.net/docs/manual-2.4/postgis_installation.html
 ENV POSTGIS_VERSION 2.4.2
-ENV POSTGIS_SHA256 1632baa8175c11f8c7e6a49d23b66d67c196d50c453244817b58e4b31d8a01b7
 RUN set -ex \
-    \
     && apk add --no-cache --virtual .fetch-deps \
         ca-certificates \
         openssl \
         tar \
-    \
-    && wget -O postgis.tar.gz "https://github.com/postgis/postgis/archive/$POSTGIS_VERSION.tar.gz" \
-    && echo "$POSTGIS_SHA256 *postgis.tar.gz" | sha256sum -c - \
-    && mkdir -p /usr/src/postgis \
-    && tar \
-        --extract \
-        --file postgis.tar.gz \
-        --directory /usr/src/postgis \
-        --strip-components 1 \
-    && rm postgis.tar.gz \
-    \
-    && apk add --no-cache --virtual .build-deps \
-        autoconf \
-        automake \
-        g++ \
-        json-c-dev \
-        libtool \
-        libxml2-dev \
-        make \
-        perl \
-    \
-    && apk add --no-cache --virtual .build-deps-testing \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-        gdal-dev \
-        geos-dev \
-        proj4-dev \
-    && cd /usr/src/postgis \
-    && ./autogen.sh \
-    && ./configure \
-    && make \
-    && make install \
-    && apk add --no-cache --virtual .postgis-rundeps \
-        json-c \
-    && apk add --no-cache --virtual .postgis-rundeps-testing \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+    && apk add --no-cache --virtual .postgis-deps --repository http://nl.alpinelinux.org/alpine/edge/testing \
         geos \
         gdal \
         proj4 \
+    && apk add --no-cache --virtual .build-deps --repository http://nl.alpinelinux.org/alpine/edge/testing \
+        postgresql-dev \
+        perl \
+        file \
+        geos-dev \
+        libxml2-dev \
+        gdal-dev \
+        proj4-dev \
+        gcc g++ \
+        make \
+    && cd /tmp \
+    && wget http://download.osgeo.org/postgis/source/postgis-${POSTGIS_VERSION}.tar.gz -O - | tar -xz \
+    && chown root:root -R postgis-${POSTGIS_VERSION} \
+    && cd /tmp/postgis-${POSTGIS_VERSION} \
+    && ./configure \
+    && echo "PERL = /usr/bin/perl" >> extensions/postgis/Makefile \
+    && echo "PERL = /usr/bin/perl" >> extensions/postgis_topology/Makefile \
+    && make -s \
+    && make -s install \
     && cd / \
-    && rm -rf /usr/src/postgis \
-&& apk del .fetch-deps .build-deps .build-deps-testing
+    \
+    && rm -rf /tmp/postgis-${POSTGIS_VERSION} \
+    && apk del .fetch-deps .build-deps
+
+# http://docs.timescale.com/latest/getting-started/installation/linux/installation-source
+ENV TIMESCALEDB_VERSION 0.7.1
+RUN set -ex \
+    && apk add --no-cache --virtual .fetch-deps \
+        ca-certificates \
+        openssl \
+        tar \
+    && mkdir -p /build/timescaledb \
+    && wget -O /timescaledb.tar.gz https://github.com/timescale/timescaledb/archive/${TIMESCALEDB_VERSION}.tar.gz \
+    && tar -C /build/timescaledb --strip-components 1 -zxf /timescaledb.tar.gz \
+    && rm -f /timescaledb.tar.gz \
+    \
+    && apk add --no-cache --virtual .build-deps \
+        coreutils \
+        dpkg-dev dpkg \
+        gcc \
+        libc-dev \
+        make \
+        util-linux-dev \
+    \
+    && cd /build/timescaledb \
+    && ls -la \
+    && ./bootstrap \
+    && cd ./build \
+    && ls -la \
+    && make \
+    && make install \
+    && cd / \
+    \
+    && apk del .fetch-deps .build-deps \
+    && rm -rf /build \
+    && sed -r -i "s/[#]*\s*(shared_preload_libraries)\s*=\s*'(.*)'/\1 = 'timescaledb,\2'/;s/,'/'/" /usr/local/share/postgresql/postgresql.conf.sample
 
 COPY ./init-postgres.sh /docker-entrypoint-initdb.d/postgres.sh
 COPY ./init-postgis.sh /docker-entrypoint-initdb.d/postgis.sh
+COPY ./init-timescaledb.sh /docker-entrypoint-initdb.d/timescaledb.sh
