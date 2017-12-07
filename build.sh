@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t binakot/postgres-postgis-timescaledb .
+docker build --no-cache -t binakot/postgres-postgis-timescaledb .
