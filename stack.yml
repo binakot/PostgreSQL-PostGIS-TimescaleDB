@@ -1,0 +1,11 @@
+version: '3.4'
+services:
+  db:
+    image: binakot/postgres-postgis-timescaledb
+    environment:
+      POSTGRES_PASSWORD: postgres
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
