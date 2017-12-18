@@ -94,6 +94,6 @@ RUN set -ex \
     && apk del .fetch-deps .build-deps \    
     && sed -r -i "s/[#]*\s*(shared_preload_libraries)\s*=\s*'(.*)'/\1 = 'timescaledb,\2'/;s/,'/'/" /usr/local/share/postgresql/postgresql.conf.sample
 
-COPY ./init-postgres.sh /docker-entrypoint-initdb.d/postgres.sh
-COPY ./init-postgis.sh /docker-entrypoint-initdb.d/postgis.sh
-COPY ./init-timescaledb.sh /docker-entrypoint-initdb.d/timescaledb.sh
+COPY ./init-postgis.sh /docker-entrypoint-initdb.d/1.postgis.sh
+COPY ./init-timescaledb.sh /docker-entrypoint-initdb.d/2.timescaledb.sh
+COPY ./init-postgres.sh /docker-entrypoint-initdb.d/3.postgres.sh
