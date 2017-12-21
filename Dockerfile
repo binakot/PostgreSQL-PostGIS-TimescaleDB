@@ -57,8 +57,8 @@ RUN set -ex \
 
 # http://docs.timescale.com/latest/getting-started/installation/linux/installation-source
 # https://github.com/timescale/timescaledb-docker/blob/master/Dockerfile
-ENV TIMESCALEDB_VERSION 0.7.1
-ENV TIMESCALEDB_SHA256 f1aa897d733dcf04a131ac82ba977c39f0a1373b07fb85a377140ef63d054509
+ENV TIMESCALEDB_VERSION 0.8.0
+ENV TIMESCALEDB_SHA256 689a7091d43df72922da320b1b7a98fabe92eb230f317cf18d6a2e9972479fe8
 RUN set -ex \
     && apk add --no-cache --virtual .fetch-deps \
         ca-certificates \
