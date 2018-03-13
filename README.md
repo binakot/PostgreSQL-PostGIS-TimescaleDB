@@ -8,9 +8,9 @@ Docker image with:
 * [TimescaleDB](https://www.timescale.com/)
 
 Current versions of components:
-* PostgreSQL: **10.1** ([Source docker image](https://store.docker.com/images/postgres))
-* PostGIS: **2.4.2** ([Release archive](https://github.com/postgis/postgis/releases/tag/2.4.2))
-* TimescaleDB: **0.8.0** ([Release archive](https://github.com/timescale/timescaledb/releases/tag/0.8.0))
+* PostgreSQL: **10.3** ([Source docker image](https://store.docker.com/images/postgres))
+* PostGIS: **2.4.3** ([Release archive](https://github.com/postgis/postgis/releases/tag/2.4.3))
+* TimescaleDB: **0.9.0** ([Release archive](https://github.com/timescale/timescaledb/releases/tag/0.9.0))
 
 How to build:
 
@@ -22,10 +22,4 @@ How to run:
 
 ```bash
 $ docker run -d --name postgres -e POSTGRES_PASSWORD=postgres binakot/postgres-postgis-timescaledb
-```
-
-Fast start with docker stack:
-
-```bash
-$ docker stack deploy -c stack.yml postgres
 ```

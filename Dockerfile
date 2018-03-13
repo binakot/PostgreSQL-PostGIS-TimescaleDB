@@ -1,12 +1,12 @@
 # https://github.com/docker-library/postgres/blob/master/10/alpine/Dockerfile
-FROM postgres:10.1-alpine
+FROM postgres:10.3-alpine
 
 MAINTAINER Ivan Muratov, binakot@gmail.com
 
 # https://postgis.net/docs/manual-2.4/postgis_installation.html
 # https://github.com/appropriate/docker-postgis/blob/master/10-2.4/alpine/Dockerfile
-ENV POSTGIS_VERSION 2.4.2
-ENV POSTGIS_SHA256 1632baa8175c11f8c7e6a49d23b66d67c196d50c453244817b58e4b31d8a01b7
+ENV POSTGIS_VERSION 2.4.3
+ENV POSTGIS_SHA256 b9754c7b9cbc30190177ec34b570717b2b9b88ed271d18e3af68eca3632d1d95
 RUN set -ex \
     \
     && apk add --no-cache --virtual .fetch-deps \
@@ -57,8 +57,8 @@ RUN set -ex \
 
 # http://docs.timescale.com/latest/getting-started/installation/linux/installation-source
 # https://github.com/timescale/timescaledb-docker/blob/master/Dockerfile
-ENV TIMESCALEDB_VERSION 0.8.0
-ENV TIMESCALEDB_SHA256 689a7091d43df72922da320b1b7a98fabe92eb230f317cf18d6a2e9972479fe8
+ENV TIMESCALEDB_VERSION 0.9.0
+ENV TIMESCALEDB_SHA256 f8f8a39001b63ffb705a94f9ebaf4e3ded6964bdcd8ca117c735bbbaf4ba5ac4
 RUN set -ex \
     && apk add --no-cache --virtual .fetch-deps \
         ca-certificates \
