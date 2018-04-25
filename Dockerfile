@@ -4,9 +4,8 @@ FROM postgres:10.3-alpine
 MAINTAINER Ivan Muratov, binakot@gmail.com
 
 # https://postgis.net/docs/manual-2.4/postgis_installation.html
-# https://github.com/appropriate/docker-postgis/blob/master/10-2.4/alpine/Dockerfile
-ENV POSTGIS_VERSION 2.4.3
-ENV POSTGIS_SHA256 b9754c7b9cbc30190177ec34b570717b2b9b88ed271d18e3af68eca3632d1d95
+ENV POSTGIS_VERSION 2.4.4
+ENV POSTGIS_SHA256 0dff4902556ad45430e2b85dbe7e9baa758c6eb0bfd5ff6948f478beddd56b67
 RUN set -ex \
     \
     && apk add --no-cache --virtual .fetch-deps \
@@ -56,9 +55,8 @@ RUN set -ex \
     && apk del .fetch-deps .build-deps .build-deps-testing
 
 # http://docs.timescale.com/latest/getting-started/installation/linux/installation-source
-# https://github.com/timescale/timescaledb-docker/blob/master/Dockerfile
-ENV TIMESCALEDB_VERSION 0.9.0
-ENV TIMESCALEDB_SHA256 f8f8a39001b63ffb705a94f9ebaf4e3ded6964bdcd8ca117c735bbbaf4ba5ac4
+ENV TIMESCALEDB_VERSION 0.9.1
+ENV TIMESCALEDB_SHA256 f58505cceb87142cec4e72475d8a7fe08921322c90bd4ea7e1d59e5d8ab5dc77
 RUN set -ex \
     && apk add --no-cache --virtual .fetch-deps \
         ca-certificates \

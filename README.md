@@ -2,6 +2,8 @@
 
 PostgreSQL + PostGIS + TimescaleDB ready-to-use docker image 🐘🌎📈
 
+Based on [Alpine Linux](https://alpinelinux.org).
+
 Docker image with:
 * [PostgreSQL](https://www.postgresql.org/) 
 * [PostGIS](http://postgis.net/)
@@ -9,8 +11,8 @@ Docker image with:
 
 Current versions of components:
 * PostgreSQL: **10.3** ([Source docker image](https://store.docker.com/images/postgres))
-* PostGIS: **2.4.3** ([Release archive](https://github.com/postgis/postgis/releases/tag/2.4.3))
-* TimescaleDB: **0.9.0** ([Release archive](https://github.com/timescale/timescaledb/releases/tag/0.9.0))
+* PostGIS: **2.4.4** ([Release archive](https://github.com/postgis/postgis/releases/tag/2.4.4))
+* TimescaleDB: **0.9.1** ([Release archive](https://github.com/timescale/timescaledb/releases/tag/0.9.1))
 
 How to build:
 
