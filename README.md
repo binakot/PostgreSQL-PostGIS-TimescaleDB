@@ -17,11 +17,11 @@ Current versions of components:
 How to build:
 
 ```bash
-$ docker build -t binakot/postgres-postgis-timescaledb .
+$ docker build -t binakot/postgresql-postgis-timescaledb .
 ```
 
 How to run:
 
 ```bash
-$ docker run -d --name postgres -e POSTGRES_PASSWORD=postgres binakot/postgres-postgis-timescaledb
+$ docker run -d --name postgres -e POSTGRES_PASSWORD=postgres binakot/postgresql-postgis-timescaledb
 ```
