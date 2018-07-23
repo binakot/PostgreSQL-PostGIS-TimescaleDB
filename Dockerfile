@@ -1,5 +1,5 @@
 # https://github.com/docker-library/postgres/blob/master/10/alpine/Dockerfile
-FROM postgres:10.3-alpine
+FROM postgres:10.4-alpine
 
 MAINTAINER Ivan Muratov, binakot@gmail.com
 
@@ -58,8 +58,8 @@ RUN set -ex \
     && apk del .fetch-deps .build-deps .build-deps-testing
 
 # http://docs.timescale.com/latest/getting-started/installation/linux/installation-source
-ENV TIMESCALEDB_VERSION 0.9.1
-ENV TIMESCALEDB_SHA256 f58505cceb87142cec4e72475d8a7fe08921322c90bd4ea7e1d59e5d8ab5dc77
+ENV TIMESCALEDB_VERSION 0.10.1
+ENV TIMESCALEDB_SHA256 79dc9f53db14544c6a559f4f2f917348efcf502aef5aec599b3f532c646a817a
 RUN set -ex \
     && apk add --no-cache --virtual .fetch-deps \
         ca-certificates \
