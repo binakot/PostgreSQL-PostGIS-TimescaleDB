@@ -33,6 +33,9 @@ RUN set -ex \
         make \
         perl \
     \
+    && apk add --no-cache --virtual .gdal-rundeps \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+        libressl2.7-libcrypto \
     && apk add --no-cache --virtual .build-deps-testing \
         --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
         gdal-dev \
