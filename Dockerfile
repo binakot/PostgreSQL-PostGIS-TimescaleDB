@@ -1,18 +1,44 @@
 # https://github.com/docker-library/postgres/blob/master/10/alpine/Dockerfile
-FROM postgres:10.4-alpine
+FROM postgres:10.5-alpine
 
 MAINTAINER Ivan Muratov, binakot@gmail.com
 
 # https://postgis.net/docs/manual-2.4/postgis_installation.html
-ENV POSTGIS_VERSION 2.4.4
-ENV POSTGIS_SHA256 0dff4902556ad45430e2b85dbe7e9baa758c6eb0bfd5ff6948f478beddd56b67
+ENV POSTGIS_VERSION 2.4.5
+ENV POSTGIS_SHA256 14815a11ff1fbeaa4a0cb942a9509c35e850395b0694f6fc6ebe6276ef13fccf
 RUN set -ex \
     \
     && apk add --no-cache --virtual .fetch-deps \
         ca-certificates \
         openssl \
         tar \
-    \
+    && apk add --no-cache --virtual .crypto-rundeps \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+        libressl2.7-libcrypto \
+    && apk add --no-cache --virtual .postgis-deps \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+        geos \
+        gdal \        
+        proj4 \
+        protobuf-c \
+    && apk add --no-cache --virtual .build-deps \
+        --repository http://nl.alpinelinux.org/alpine/edge/testing \
+        postgresql-dev \
+        perl \
+        file \
+        geos-dev \
+        libxml2-dev \
+        gdal-dev \
+        proj4-dev \
+        protobuf-c-dev \
+        json-c-dev \
+        gcc \
+        g++ \
+        make \
+        autoconf \
+        automake \        
+        libtool \
+    \    
     && wget -O postgis.tar.gz "https://github.com/postgis/postgis/archive/$POSTGIS_VERSION.tar.gz" \
     && echo "$POSTGIS_SHA256 *postgis.tar.gz" | sha256sum -c - \
     && mkdir -p /usr/src/postgis \
@@ -23,48 +49,36 @@ RUN set -ex \
         --strip-components 1 \
     && rm postgis.tar.gz \
     \
-    && apk add --no-cache --virtual .build-deps \
-        autoconf \
-        automake \
-        g++ \
-        json-c-dev \
-        libtool \
-        libxml2-dev \
-        make \
-        perl \
-    \
-    && apk add --no-cache --virtual .gdal-rundeps \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-        libressl2.7-libcrypto \
-    && apk add --no-cache --virtual .build-deps-testing \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-        gdal-dev \
-        geos-dev \
-        proj4-dev \
     && cd /usr/src/postgis \
     && ./autogen.sh \
     && ./configure \
-    && make \
-    && make install \
+    && make -s \
+    && make -s install \
     && apk add --no-cache --virtual .postgis-rundeps \
         json-c \
-    && apk add --no-cache --virtual .postgis-rundeps-testing \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-        geos \
-        gdal \
-        proj4 \
     && cd / \
     && rm -rf /usr/src/postgis \
-    && apk del .fetch-deps .build-deps .build-deps-testing
+    && apk del .fetch-deps .build-deps
 
 # http://docs.timescale.com/latest/getting-started/installation/linux/installation-source
-ENV TIMESCALEDB_VERSION 0.10.1
-ENV TIMESCALEDB_SHA256 79dc9f53db14544c6a559f4f2f917348efcf502aef5aec599b3f532c646a817a
+ENV TIMESCALEDB_VERSION 0.12.1
+ENV TIMESCALEDB_SHA256 40667715d0cdcd3eb57a3dd5a23a6c0e85e394e9096eb100b913e8c5489719cd
 RUN set -ex \
     && apk add --no-cache --virtual .fetch-deps \
         ca-certificates \
         openssl \
+        openssl-dev \
         tar \
+    && apk add --no-cache --virtual .build-deps \
+        coreutils \
+        dpkg \
+        dpkg-dev \
+        gcc \
+        libc-dev \
+        make \
+        cmake \
+        util-linux-dev \
+    \
     && wget -O timescaledb.tar.gz "https://github.com/timescale/timescaledb/archive/$TIMESCALEDB_VERSION.tar.gz" \
     && echo "$TIMESCALEDB_SHA256 *timescaledb.tar.gz" | sha256sum -c - \
     && mkdir -p /usr/src/timescaledb \
@@ -73,22 +87,11 @@ RUN set -ex \
         --file timescaledb.tar.gz \
         --directory /usr/src/timescaledb \
         --strip-components 1 \
-    && rm timescaledb.tar.gz \
-    \
-    && apk add --no-cache --virtual .build-deps \
-        coreutils \
-        dpkg-dev dpkg \
-        gcc \
-        libc-dev \
-        make \        
-        util-linux-dev \
-        cmake \
+    && rm timescaledb.tar.gz \    
     \
     && cd /usr/src/timescaledb \
-    && ./bootstrap \    
-    && cd ./build \
-    && make \
-    && make install \
+    && ./bootstrap -DPROJECT_INSTALL_METHOD="docker" \
+    && cd ./build && make install \
     \
     && cd / \
     && rm -rf /usr/src/timescaledb \

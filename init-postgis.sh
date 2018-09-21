@@ -14,7 +14,5 @@ for DB in template_postgis "$POSTGRES_DB"; do
 	psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname="$DB" <<-EOSQL
 		CREATE EXTENSION IF NOT EXISTS postgis CASCADE;
 		CREATE EXTENSION IF NOT EXISTS postgis_topology CASCADE;
-		CREATE EXTENSION IF NOT EXISTS fuzzystrmatch CASCADE;
-		CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder CASCADE;
 	EOSQL
 done
