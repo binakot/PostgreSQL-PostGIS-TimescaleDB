@@ -10,9 +10,9 @@ Docker image with:
 * [TimescaleDB](https://www.timescale.com/)
 
 Current versions of components:
-* PostgreSQL: **10.5** ([Source docker image](https://store.docker.com/images/postgres))
-* PostGIS: **2.4.5** ([Release archive](https://github.com/postgis/postgis/releases/tag/2.4.5))
-* TimescaleDB: **0.12.1** ([Release archive](https://github.com/timescale/timescaledb/releases/tag/0.12.1))
+* PostgreSQL: **11.1** ([Source docker image](https://store.docker.com/images/postgres))
+* PostGIS: **2.5.1** ([Release archive](https://github.com/postgis/postgis/releases/tag/2.5.1))
+* TimescaleDB: **1.1.1** ([Release archive](https://github.com/timescale/timescaledb/releases/tag/1.1.1))
 
 How to build:
 

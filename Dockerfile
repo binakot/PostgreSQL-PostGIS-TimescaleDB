@@ -1,44 +1,44 @@
-# https://github.com/docker-library/postgres/blob/master/10/alpine/Dockerfile
-FROM postgres:10.5-alpine
+# https://github.com/docker-library/postgres/blob/master/11/alpine/Dockerfile
+FROM postgres:11.1-alpine
 
 MAINTAINER Ivan Muratov, binakot@gmail.com
 
-# https://postgis.net/docs/manual-2.4/postgis_installation.html
-ENV POSTGIS_VERSION 2.4.5
-ENV POSTGIS_SHA256 14815a11ff1fbeaa4a0cb942a9509c35e850395b0694f6fc6ebe6276ef13fccf
+# https://postgis.net/docs/manual-2.5/postgis_installation.html
+ENV POSTGIS_VERSION 2.5.1
+ENV POSTGIS_SHA256 d380e9ec0aeee87c5d976b9111ea11199ba875f2cd496c49b4141db29cee9557
 RUN set -ex \
     \
     && apk add --no-cache --virtual .fetch-deps \
         ca-certificates \
         openssl \
         tar \
-    && apk add --no-cache --virtual .crypto-rundeps \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-        libressl2.7-libcrypto \
-    && apk add --no-cache --virtual .postgis-deps \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-        geos \
-        gdal \        
-        proj4 \
-        protobuf-c \
     && apk add --no-cache --virtual .build-deps \
-        --repository http://nl.alpinelinux.org/alpine/edge/testing \
-        postgresql-dev \
-        perl \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+        make \
+        automake \
+        autoconf \
+        libtool \
+        gcc \
+        g++ \
         file \
-        geos-dev \
+        perl \
+        json-c-dev \
         libxml2-dev \
+        \
+        geos-dev \
         gdal-dev \
         proj4-dev \
         protobuf-c-dev \
-        json-c-dev \
-        gcc \
-        g++ \
-        make \
-        autoconf \
-        automake \        
-        libtool \
-    \    
+        postgresql-dev \
+    && apk add --no-cache --virtual .postgis-deps \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+        geos \
+        gdal \
+        proj4 \
+        protobuf-c \
+    \
     && wget -O postgis.tar.gz "https://github.com/postgis/postgis/archive/$POSTGIS_VERSION.tar.gz" \
     && echo "$POSTGIS_SHA256 *postgis.tar.gz" | sha256sum -c - \
     && mkdir -p /usr/src/postgis \
@@ -61,8 +61,8 @@ RUN set -ex \
     && apk del .fetch-deps .build-deps
 
 # http://docs.timescale.com/latest/getting-started/installation/linux/installation-source
-ENV TIMESCALEDB_VERSION 0.12.1
-ENV TIMESCALEDB_SHA256 40667715d0cdcd3eb57a3dd5a23a6c0e85e394e9096eb100b913e8c5489719cd
+ENV TIMESCALEDB_VERSION 1.1.1
+ENV TIMESCALEDB_SHA256 c2f0f745f9ab52bf7fedd24e129efde5f39a0f27a8f41e1568aab98cd21d5a68
 RUN set -ex \
     && apk add --no-cache --virtual .fetch-deps \
         ca-certificates \
@@ -70,14 +70,14 @@ RUN set -ex \
         openssl-dev \
         tar \
     && apk add --no-cache --virtual .build-deps \
-        coreutils \
-        dpkg \
-        dpkg-dev \
-        gcc \
-        libc-dev \
         make \
         cmake \
+        gcc \
+        dpkg \
+        dpkg-dev \
         util-linux-dev \
+        libc-dev \
+        coreutils \
     \
     && wget -O timescaledb.tar.gz "https://github.com/timescale/timescaledb/archive/$TIMESCALEDB_VERSION.tar.gz" \
     && echo "$TIMESCALEDB_SHA256 *timescaledb.tar.gz" | sha256sum -c - \
