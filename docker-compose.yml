@@ -1,0 +1,36 @@
+version: '3.4'
+
+networks:
+  overlay:
+
+volumes:
+  pg_data:
+    driver: local
+
+services:
+  postgres:
+    image: binakot/postgresql-postgis-timescaledb:latest
+    name: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
+    networks:
+      - overlay
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    name: pgadmin
+    restart: unless-stopped
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - 5433:80
+    networks:
+      - overlay
