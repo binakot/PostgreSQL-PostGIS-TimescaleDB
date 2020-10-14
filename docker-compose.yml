@@ -10,7 +10,7 @@ volumes:
 services:
   postgres:
     image: binakot/postgresql-postgis-timescaledb:latest
-    name: postgres
+    container_name: postgres
     restart: unless-stopped
     environment:
       - POSTGRES_DB=postgres
@@ -25,7 +25,7 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4:latest
-    name: pgadmin
+    container_name: pgadmin
     restart: unless-stopped
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
