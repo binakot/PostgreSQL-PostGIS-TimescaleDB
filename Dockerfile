@@ -1,16 +1,18 @@
 # https://github.com/docker-library/postgres/blob/master/12/alpine/Dockerfile
-FROM postgres:12.4-alpine
+FROM postgres:12.5-alpine
 
 MAINTAINER Ivan Muratov, binakot@gmail.com
 
-# https://postgis.net/docs/manual-2.5/postgis_installation.html
-ENV POSTGIS_VERSION 2.5.5
-ENV POSTGIS_SHA256 24b15ee36f3af02015da0e92a18f9046ea0b4fd24896196c8e6c2aa8e4b56baa
+# https://postgis.net/docs/manual-3.1/postgis_installation.html
+ENV POSTGIS_VERSION 3.1.1
+ENV POSTGIS_SHA256 28e9cb33d5a762ad2aa72513a05183bf45416ba7de2316ff3ad0da60c4ce56e3
 RUN set -ex \
     \
     && apk add --no-cache --virtual .fetch-deps \
+        build-base \
         ca-certificates \
         openssl \
+        git \
         tar \
     && apk add --no-cache --virtual .build-deps \
         --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
@@ -19,10 +21,13 @@ RUN set -ex \
         automake \
         autoconf \
         libtool \
+        file \
         gcc \
         g++ \
-        file \
         perl \
+        clang \
+        clang-dev \
+        llvm-dev \
         json-c-dev \
         libxml2-dev \
         \
@@ -60,18 +65,22 @@ RUN set -ex \
     && rm -rf /usr/src/postgis \
     && apk del .fetch-deps .build-deps
 
-# https://docs.timescale.com/v1.7/getting-started/installation/ubuntu/installation-source
-ENV TIMESCALEDB_VERSION 1.7.4
-ENV TIMESCALEDB_SHA256 d0b7a153ff3e02ecf033a869ecdf4286f8610ea76140baa84928fc3a80223e99
+# https://docs.timescale.com/v2.0.1/getting-started/installation/ubuntu/installation-source
+ENV TIMESCALEDB_VERSION 2.0.1
+ENV TIMESCALEDB_SHA256 96e51d5240547f0223c34b91263f6fffca46927710764bf450aa61e9756189bd
 RUN set -ex \
     && apk add --no-cache --virtual .fetch-deps \
+        build-base \
         ca-certificates \
         openssl \
-        openssl-dev \
+        git \
         tar \
     && apk add --no-cache --virtual .build-deps \
+        openssl-dev \
         make \
         cmake \
+        clang \
+        clang-dev \
         gcc \
         dpkg \
         dpkg-dev \
