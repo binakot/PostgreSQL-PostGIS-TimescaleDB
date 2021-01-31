@@ -25,26 +25,24 @@ RUN set -ex \
         gcc \
         g++ \
         perl \
-        clang \
         clang-dev \
         llvm-dev \
-        json-c-dev \
         libxml2-dev \
         \
+        json-c-dev \
         geos-dev \
         gdal-dev \
         proj-dev \
         protobuf-c-dev \
         postgresql-dev \
-    && apk add --no-cache --virtual .postgis-deps \
+    && apk add --no-cache --virtual .postgis-rundeps \
         --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
         --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+        json-c \
         geos \
         gdal \
         proj \
         protobuf-c \
-    && apk add --no-cache --virtual .postgis-rundeps \
-        json-c \
     \
     && wget -O postgis.tar.gz "https://github.com/postgis/postgis/archive/$POSTGIS_VERSION.tar.gz" \
     && echo "$POSTGIS_SHA256 *postgis.tar.gz" | sha256sum -c - \
@@ -73,10 +71,10 @@ RUN set -ex \
         build-base \
         ca-certificates \
         openssl \
-        openssl-dev \
         git \
         tar \
     && apk add --no-cache --virtual .build-deps \
+        openssl-dev \
         make \
         cmake \
         clang \
@@ -87,7 +85,7 @@ RUN set -ex \
         util-linux-dev \
         libc-dev \
         coreutils \
-    && apk add --no-cache --virtual .crypto-rundeps \
+    && apk add --no-cache --virtual .timescaledb-rundeps \
         --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
         libressl3.1-libcrypto \
         libcrypto1.1 \
