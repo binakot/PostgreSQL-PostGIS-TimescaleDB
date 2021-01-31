@@ -43,6 +43,8 @@ RUN set -ex \
         gdal \
         proj \
         protobuf-c \
+    && apk add --no-cache --virtual .postgis-rundeps \
+        json-c \
     \
     && wget -O postgis.tar.gz "https://github.com/postgis/postgis/archive/$POSTGIS_VERSION.tar.gz" \
     && echo "$POSTGIS_SHA256 *postgis.tar.gz" | sha256sum -c - \
@@ -59,8 +61,6 @@ RUN set -ex \
     && ./configure \
     && make -s \
     && make -s install \
-    && apk add --no-cache --virtual .postgis-rundeps \
-        json-c \
     && cd / \
     && rm -rf /usr/src/postgis \
     && apk del .fetch-deps .build-deps
@@ -73,10 +73,10 @@ RUN set -ex \
         build-base \
         ca-certificates \
         openssl \
+        openssl-dev \
         git \
         tar \
     && apk add --no-cache --virtual .build-deps \
-        openssl-dev \
         make \
         cmake \
         clang \
@@ -87,6 +87,12 @@ RUN set -ex \
         util-linux-dev \
         libc-dev \
         coreutils \
+    && apk add --no-cache --virtual .crypto-rundeps \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+        libressl3.1-libcrypto \
+        libcrypto1.1 \
+        poppler \
+        llvm-dev \
     \
     && wget -O timescaledb.tar.gz "https://github.com/timescale/timescaledb/archive/$TIMESCALEDB_VERSION.tar.gz" \
     && echo "$TIMESCALEDB_SHA256 *timescaledb.tar.gz" | sha256sum -c - \
