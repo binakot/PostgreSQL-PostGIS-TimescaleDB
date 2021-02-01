@@ -74,23 +74,20 @@ RUN set -ex \
         git \
         tar \
     && apk add --no-cache --virtual .build-deps \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
         make \
         cmake \
+        gcc \
         clang \
         clang-dev \
-        gcc \
         llvm-dev \
         dpkg \
         dpkg-dev \
         util-linux-dev \
         libc-dev \
         coreutils \
-    && apk add --no-cache --virtual .timescaledb-cryptodeps \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-        libressl \
-        libressl-dev \
-        libressl3.1-libcrypto \
-        libcrypto1.1 \
+        openssl-dev \
     \
     && wget -O timescaledb.tar.gz "https://github.com/timescale/timescaledb/archive/$TIMESCALEDB_VERSION.tar.gz" \
     && echo "$TIMESCALEDB_SHA256 *timescaledb.tar.gz" | sha256sum -c - \
