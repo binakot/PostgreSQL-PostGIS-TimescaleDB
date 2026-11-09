@@ -9,7 +9,8 @@ volumes:
 
 services:
   postgres:
-    image: binakot/postgresql-postgis-timescaledb:latest
+    image: binakot/postgresql-postgis-timescaledb:local
+    build: .
     container_name: postgres
     restart: unless-stopped
     environment:
@@ -21,7 +22,7 @@ services:
     networks:
       - overlay
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql
 
   pgadmin:
     image: dpage/pgadmin4:latest

@@ -1,48 +1,17 @@
-# https://github.com/docker-library/postgres/blob/master/13/alpine/Dockerfile
-FROM postgres:13.4-alpine
+# https://github.com/docker-library/postgres/blob/master/18/alpine3.24/Dockerfile
+FROM postgres:18.6-alpine
 
-MAINTAINER Ivan Muratov, binakot@gmail.com
+LABEL maintainer="Ivan Muratov <binakot@gmail.com>"
 
-# https://postgis.net/docs/manual-3.1/postgis_installation.html
-ENV POSTGIS_VERSION 3.1.4
-ENV POSTGIS_SHA256 dfcbad0c6090c80bc59d3ea77d1adc4b3ade533a403761b4af6d9a44be1a6e48
-RUN set -ex \
-    \
+# https://postgis.net/docs/manual-3.7/postgis_installation.html
+# Based on https://github.com/postgis/docker-postgis/blob/master/18-3.7/alpine/Dockerfile
+ENV POSTGIS_VERSION 3.7.0
+ENV POSTGIS_SHA256 306d68a115b88c59d9ffbd134b28fd1b0eccb7b0dabcbb5df2dc0b009d9de848
+RUN set -eux \
     && apk add --no-cache --virtual .fetch-deps \
-        build-base \
         ca-certificates \
         openssl \
-        git \
         tar \
-    && apk add --no-cache --virtual .build-deps \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-        make \
-        automake \
-        autoconf \
-        libtool \
-        file \
-        gcc \
-        g++ \
-        perl \
-        clang-dev \
-        llvm-dev \
-        libxml2-dev \
-        \
-        json-c-dev \
-        geos-dev \
-        gdal-dev \
-        proj-dev \
-        protobuf-c-dev \
-        postgresql-dev \
-    && apk add --no-cache --virtual .postgis-rundeps \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-        json-c \
-        geos \
-        gdal \
-        proj \
-        protobuf-c \
     \
     && wget -O postgis.tar.gz "https://github.com/postgis/postgis/archive/$POSTGIS_VERSION.tar.gz" \
     && echo "$POSTGIS_SHA256 *postgis.tar.gz" | sha256sum -c - \
@@ -54,41 +23,75 @@ RUN set -ex \
         --strip-components 1 \
     && rm postgis.tar.gz \
     \
+    && apk add --no-cache --virtual .build-deps \
+        gdal-dev \
+        geos-dev \
+        gmp-dev \
+        proj-dev \
+        proj-util \
+        sfcgal-dev \
+        \
+        # Matches clang/llvm used to build the official postgres alpine image
+        $DOCKER_PG_LLVM_DEPS \
+        \
+        autoconf \
+        automake \
+        file \
+        g++ \
+        gcc \
+        gettext-dev \
+        json-c-dev \
+        libtool \
+        libxml2-dev \
+        make \
+        pcre2-dev \
+        perl \
+        protobuf-c-dev \
+    \
     && cd /usr/src/postgis \
+    && gettextize \
     && ./autogen.sh \
     && ./configure \
-    && make -s \
-    && make -s install \
+        --enable-lto \
+    && make -j"$(nproc)" \
+    && make install \
+    \
+    && apk add --no-cache --virtual .postgis-rundeps \
+        gdal \
+        geos \
+        gmp \
+        proj \
+        sfcgal \
+        json-c \
+        libstdc++ \
+        pcre2 \
+        protobuf-c \
+        ca-certificates \
+    \
     && cd / \
     && rm -rf /usr/src/postgis \
     && apk del .fetch-deps .build-deps
 
-# https://docs.timescale.com/timescaledb/latest/how-to-guides/install-timescaledb/self-hosted/ubuntu/installation-source
-ENV TIMESCALEDB_VERSION 2.4.2
-ENV TIMESCALEDB_SHA256 b206a376251259eb745eee819e7a853b3fbab9dc8443303714484a0fef89a2a4
-RUN set -ex \
+# https://docs.tigerdata.com/self-hosted/latest/install/installation-source
+ENV TIMESCALEDB_VERSION 2.31.0
+ENV TIMESCALEDB_SHA256 7a0135283240abb64c87713e3280d70461954028d6426374b7e4e59f7dca6a56
+RUN set -eux \
     && apk add --no-cache --virtual .fetch-deps \
-        build-base \
         ca-certificates \
         git \
-        tar \
-    && apk add --no-cache --virtual .build-deps \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-        make \
-        cmake \
-        gcc \
-        clang \
-        clang-dev \
-        llvm-dev \
-        dpkg \
-        dpkg-dev \
-        util-linux-dev \
-        libc-dev \
-        coreutils \
-    && apk add --no-cache --virtual .timescaledb-rundeps \
         openssl \
         openssl-dev \
+        tar \
+    && apk add --no-cache --virtual .build-deps \
+        coreutils \
+        dpkg \
+        dpkg-dev \
+        gcc \
+        icu-dev \
+        libc-dev \
+        make \
+        cmake \
+        util-linux-dev \
     \
     && wget -O timescaledb.tar.gz "https://github.com/timescale/timescaledb/archive/$TIMESCALEDB_VERSION.tar.gz" \
     && echo "$TIMESCALEDB_SHA256 *timescaledb.tar.gz" | sha256sum -c - \
@@ -101,8 +104,13 @@ RUN set -ex \
     && rm timescaledb.tar.gz \
     \
     && cd /usr/src/timescaledb \
-    && ./bootstrap -DPROJECT_INSTALL_METHOD="docker" -DREGRESS_CHECKS=OFF \
-    && cd ./build && make install \
+    && ./bootstrap \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DREGRESS_CHECKS=OFF \
+        -DTAP_CHECKS=OFF \
+        -DWARNINGS_AS_ERRORS=OFF \
+        -DPROJECT_INSTALL_METHOD="docker" \
+    && cd ./build && make -j"$(nproc)" install \
     \
     && cd / \
     && rm -rf /usr/src/timescaledb \
